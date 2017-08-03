@@ -13,6 +13,7 @@ Macaw::get('fuck/:id', function($id) {
     echo $id;
 });
 
+Macaw::get('/', "app\controller\Index@index");
 Macaw::error(function() {
     global $CONFIG;
     header("content");
