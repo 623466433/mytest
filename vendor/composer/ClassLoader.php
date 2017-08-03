@@ -13,7 +13,9 @@
 namespace Composer\Autoload;
 
 /**
- * ClassLoader implements a PSR-0, PSR-4 and classmap class loader.
+ * ClassLoader implements a PSR-0 class loader
+ *
+ * See https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
  *
  *     $loader = new \Composer\Autoload\ClassLoader();
  *
@@ -37,8 +39,6 @@ namespace Composer\Autoload;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Jordi Boggiano <j.boggiano@seld.be>
- * @see    http://www.php-fig.org/psr/psr-0/
- * @see    http://www.php-fig.org/psr/psr-4/
  */
 class ClassLoader
 {
@@ -53,8 +53,6 @@ class ClassLoader
 
     private $useIncludePath = false;
     private $classMap = array();
-    private $classMapAuthoritative = false;
-    private $missingClasses = array();
 
     public function getPrefixes()
     {
@@ -147,7 +145,7 @@ class ClassLoader
      * appending or prepending to the ones previously set for this namespace.
      *
      * @param string       $prefix  The prefix/namespace, with trailing '\\'
-     * @param array|string $paths   The PSR-4 base directories
+     * @param array|string $paths   The PSR-0 base directories
      * @param bool         $prepend Whether to prepend the directories
      *
      * @throws \InvalidArgumentException
@@ -251,27 +249,6 @@ class ClassLoader
     }
 
     /**
-     * Turns off searching the prefix and fallback directories for classes
-     * that have not been registered with the class map.
-     *
-     * @param bool $classMapAuthoritative
-     */
-    public function setClassMapAuthoritative($classMapAuthoritative)
-    {
-        $this->classMapAuthoritative = $classMapAuthoritative;
-    }
-
-    /**
-     * Should class lookup fail if not found in the current class map?
-     *
-     * @return bool
-     */
-    public function isClassMapAuthoritative()
-    {
-        return $this->classMapAuthoritative;
-    }
-
-    /**
      * Registers this instance as an autoloader.
      *
      * @param bool $prepend Whether to prepend the autoloader or not
@@ -322,20 +299,17 @@ class ClassLoader
         if (isset($this->classMap[$class])) {
             return $this->classMap[$class];
         }
-        if ($this->classMapAuthoritative || isset($this->missingClasses[$class])) {
-            return false;
-        }
 
         $file = $this->findFileWithExtension($class, '.php');
 
         // Search for Hack files if we are running on HHVM
-        if (false === $file && defined('HHVM_VERSION')) {
+        if ($file === null && defined('HHVM_VERSION')) {
             $file = $this->findFileWithExtension($class, '.hh');
         }
 
-        if (false === $file) {
+        if ($file === null) {
             // Remember that this class does not exist.
-            $this->missingClasses[$class] = true;
+            return $this->classMap[$class] = false;
         }
 
         return $file;
@@ -399,8 +373,6 @@ class ClassLoader
         if ($this->useIncludePath && $file = stream_resolve_include_path($logicalPathPsr0)) {
             return $file;
         }
-
-        return false;
     }
 }
 

@@ -7,8 +7,6 @@
  * Copyright 2016, Angel Lai
  * Released under the MIT license
  */
-namespace Medoo;
-
 class medoo
 {
 	// General
@@ -45,17 +43,13 @@ class medoo
 
 	public function __construct($options = null)
 	{
-        $DbOptions = require __DIR__."/../../../config/database.php";
-        if (empty($DbOptions)){
-            $DbOptions = $options;
-        }
 		try {
 			$commands = array();
 			$dsn = '';
 
-			if (is_array($DbOptions))
+			if (is_array($options))
 			{
-				foreach ($DbOptions as $option => $value)
+				foreach ($options as $option => $value)
 				{
 					$this->$option = $value;
 				}
@@ -76,9 +70,9 @@ class medoo
 			$type = strtolower($this->database_type);
 			$is_port = isset($port);
 
-			if (isset($DbOptions[ 'prefix' ]))
+			if (isset($options[ 'prefix' ]))
 			{
-				$this->prefix = $DbOptions[ 'prefix' ];
+				$this->prefix = $options[ 'prefix' ];
 			}
 
 			switch ($type)
@@ -140,7 +134,7 @@ class medoo
 				$commands[] = "SET NAMES '" . $this->charset . "'";
 			}
 
-			$this->pdo = new \PDO(
+			$this->pdo = new PDO(
 				$dsn,
 				$this->username,
 				$this->password,
@@ -768,15 +762,15 @@ class medoo
 
 		if ($columns === '*')
 		{
-			return $query->fetchAll(\PDO::FETCH_ASSOC);
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 
 		if ($is_single_column)
 		{
-			return $query->fetchAll(\PDO::FETCH_COLUMN);
+			return $query->fetchAll(PDO::FETCH_COLUMN);
 		}
 
-		while ($row = $query->fetch(\PDO::FETCH_ASSOC))
+		while ($row = $query->fetch(PDO::FETCH_ASSOC))
 		{
 			foreach ($columns as $key => $value)
 			{

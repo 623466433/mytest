@@ -5,8 +5,11 @@
  * Date: 2017/6/5
  * Time: 10:37
  */
+ 
+require_once "./core/define.php";
 header("Content-type: text/html; charset=utf-8");
 require __DIR__."/../vendor/autoload.php";
+
 //实例化错误捕捉类
 $whoops = new  \Whoops\Run;
 $handler = new \Whoops\Handler\PrettyPageHandler;
@@ -16,6 +19,7 @@ if (\Whoops\Util\Misc::isAjaxRequest()) {//设置处理ajax报错的信息
     $whoops->pushHandler(new JsonResponseHandler);
 }
 $whoops->register();
-$CONFIG = require __DIR__."/../config/config.php";
+
+// $CONFIG = require __DIR__."/../config/config.php";
 require __DIR__."/../config/routes.php";
 

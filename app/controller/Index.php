@@ -8,10 +8,10 @@
 
 namespace app\controller;
 
-
+use \core\Config;
 class Index
 {
     public function index(){
-        echo "ok";
+        echo Config::getIns()->get("err_info");
     }
 }
